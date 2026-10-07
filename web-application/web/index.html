@@ -1,0 +1,39 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MS Network</title>
+<style>
+body{font-family:Arial;background:#1a1a2e;color:white;text-align:center;padding:20px}
+.card{background:#16213e;padding:20px;border-radius:15px;max-width:400px;margin:auto}
+input{padding:12px;width:85%;border-radius:8px;border:none;margin:10px;font-size:16px}
+button{padding:12px;width:90%;background:#0f3460;color:white;border:none;border-radius:8px;font-size:16px}
+.result{text-align:left;margin-top:15px;background:#0f3460;padding:15px;border-radius:10px;line-height:1.8}
+b{color:#e94560}
+</style></head>
+<body><h2>MS Network Calculator</h2>
+<div class="card">
+<input id="ip" value="192.168.20.8/25">
+<button onclick="calc()">Calculate</button>
+<div id="out" class="result"></div></div>
+<script>
+function calc(){
+var v=document.getElementById('ip').value.trim();
+var s=v.split('/'); var ip=s[0]; var p=parseInt(s[1]);
+var o=ip.split('.').map(Number);
+var m=[0,0,0,0]; for(var i=0;i<p;i++){ m[Math.floor(i/8)]|=(1<<(7-i%8)); }
+var n=[]; var b=[];
+for(var i=0;i<4;i++){ n[i]=o[i]&m[i]; b[i]=n[i]|(~m[i]&255); }
+var hosts=Math.pow(2,32-p)-2; if(hosts<0) hosts=0;
+var first=[n[0],n[1],n[2],n[3]+1];
+var last=[b[0],b[1],b[2],b[3]-1];
+// /31 and /32 handling
+if(p>=31){ first=n; last=b; }
+document.getElementById('out').innerHTML=
+'<b>IP:</b> '+ip+'/'+p+'<br>'+
+'<b>Network:</b> '+n.join('.')+'<br>'+
+'<b>Subnet Mask:</b> '+m.join('.')+'<br>'+
+'<b>Broadcast:</b> '+b.join('.')+'<br>'+
+'<b>Usable Range:</b> '+first.join('.')+' - '+last.join('.')+'<br>'+
+'<b>First Usable:</b> '+first.join('.')+'<br>'+
+'<b>Last Usable:</b> '+last.join('.')+'<br>'+
+'<b>Total Hosts:</b> '+hosts;
+}calc();
+</script></body></html>
